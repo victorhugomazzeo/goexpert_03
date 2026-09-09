@@ -1,0 +1,34 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis_container
+    ports:
+      - "6379:6379"
+    restart: always
+    # O depends_on do app espera por este healthcheck, nao apenas pelo
+    # container existir. Sem ele, a app pode chamar o Ping antes de o Redis
+    # aceitar conexao e morrer no boot.
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      # Esquerda: a porta no host. 8080 esta ocupada por outro projeto nesta
+      # maquina, por isso 8081. Direita: ${SERVER_PORT} vem do .env, o mesmo
+      # valor que a app escuta -- mudar o .env move as duas pontas juntas.
+      - "8081:${SERVER_PORT}"
+    # env_file injeta TODAS as variaveis do .env dentro do container. Nao
+    # confundir com o .env que o proprio compose le para resolver ${...}
+    # aqui neste arquivo: sao dois mecanismos diferentes com o mesmo arquivo.
+    env_file: .env
+    # environment ganha de env_file. O .env aponta para 127.0.0.1, que serve
+    # para rodar na maquina; aqui dentro o Redis atende no nome do servico.
+    environment:
+      REDIS_ADDR: redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy

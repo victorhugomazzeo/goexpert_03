@@ -1,0 +1,14 @@
+# Nada aqui e necessario para compilar, e tudo que entra no contexto de build
+# e enviado ao daemon do Docker a cada build.
+.git
+.gitattributes
+.gitignore
+.vscode
+.dockerignore
+Dockerfile
+docker-compose.yaml
+*.md
+
+# O .env fica fora da imagem de proposito: configuracao nao se assa dentro do
+# binario. O compose le este arquivo do host, via env_file.
+.env
