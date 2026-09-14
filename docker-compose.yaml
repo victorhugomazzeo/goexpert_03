@@ -9,7 +9,7 @@ services:
     # container existir. Sem ele, a app pode chamar o Ping antes de o Redis
     # aceitar conexao e morrer no boot.
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -17,10 +17,7 @@ services:
   app:
     build: .
     ports:
-      # Esquerda: a porta no host. 8080 esta ocupada por outro projeto nesta
-      # maquina, por isso 8081. Direita: ${SERVER_PORT} vem do .env, o mesmo
-      # valor que a app escuta -- mudar o .env move as duas pontas juntas.
-      - "8081:${SERVER_PORT}"
+      - "8080:${SERVER_PORT}"
     # env_file injeta TODAS as variaveis do .env dentro do container. Nao
     # confundir com o .env que o proprio compose le para resolver ${...}
     # aqui neste arquivo: sao dois mecanismos diferentes com o mesmo arquivo.
